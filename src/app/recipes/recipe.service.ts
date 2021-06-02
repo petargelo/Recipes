@@ -1,19 +1,38 @@
-import { Injectable } from "@angular/core";
-import { EventEmitter } from "events";
-import {Recipe} from './recipe.model';
+import { EventEmitter, Injectable } from '@angular/core';
 
-export class RecipeService{
-    recipeSelected=new EventEmitter<Recipe>();
-    
-   private recipes: Recipe[] = [
-        new Recipe('Wok', 'This is simply a Wok test', 'https://upload.wikimedia.org/wikipedia/commons/1/15/Recipe_logo.jpeg'),
-        new Recipe('Tortilla', 'This is simply a Tortilla test', 'https://upload.wikimedia.org/wikipedia/commons/1/15/Recipe_logo.jpeg')
-    ];
+import { Recipe } from './recipe.model';
+import { Ingredient } from '../shared/ingredient.model';
+import { ShoppingListService } from '../shopping-list/shopping-list.service';
 
-    getRecipes(){
-        return this.recipes.slice(); //slice vraća shallow copy recipes array-a umjesto da se koristi direktna referenca.. Ne mijenja recipes nego uzima podatke od njega i kreira novi array. Promjene u recipe će se updateati i u novu kopiju. Ovo se radi da se onemogući pristup izvana na recipes!? 
-    }
+@Injectable()
+export class RecipeService {
+  recipeSelected = new EventEmitter<Recipe>();
 
-    }
-    
-   
+  private recipes: Recipe[] = [
+    new Recipe(
+      'Bečki odrezak',
+      '"Wiener Schnitzel“, poznat je i omiljen u cijelom svijetu!',
+      'https://upload.wikimedia.org/wikipedia/commons/7/72/Schnitzel.JPG',
+      [
+        new Ingredient('Teleći odrezak', 1),
+        new Ingredient('Pomfrit', 20)
+      ]),
+    new Recipe('Veliki mesnati burger',
+      'Treba li još išta dodati?',
+      'https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg',
+      [
+        new Ingredient('Pecivo', 2),
+        new Ingredient('Teleći odrezak', 1)
+      ])
+  ];
+
+  constructor(private slService: ShoppingListService) {}
+
+  getRecipes() {
+    return this.recipes.slice();
+  }
+
+  addIngredientsToShoppingList(ingredients: Ingredient[]) {
+    this.slService.addIngredients(ingredients);
+  }
+}
