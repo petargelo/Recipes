@@ -28,8 +28,8 @@ export class RecipeDetailComponent implements OnInit {
   }
 
   onEditRecipe(){
-/*     this.router.navigate(['edit'], {relativeTo: this.route});
- */    this.router.navigate(['../', this.id, 'edit'], {relativeTo: this.route});
-
+    this.router.navigate(['edit'], {relativeTo: this.route});
+/*     this.router.navigate(['../', this.id, 'edit'], {relativeTo: this.route});
+    More complex way with going up one level and manually adding retrieved id to route*/
   }
 }
