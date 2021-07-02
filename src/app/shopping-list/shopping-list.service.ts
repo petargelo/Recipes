@@ -19,13 +19,14 @@ export class ShoppingListService {
 
   updateIngredient(index: number, newIngredient: Ingredient){
     this.ingredients[index] = newIngredient;
-    this.ingredientsChanged.next(this.ingredients);
+    this.ingredientsChanged.next(this.ingredients.slice());  //ingredientsChanged is called everytime I expect some change to happen. It serves for an observable.
   }
 
   addIngredient(ingredient: Ingredient) {
     this.ingredients.push(ingredient);
     this.ingredientsChanged.next(this.ingredients.slice());
   }
+
 
   addIngredients(ingredientz: Ingredient[]) {
     // for (let ingredient of ingredients) {
@@ -39,6 +40,11 @@ export class ShoppingListService {
     this.ingredients.push(...ingredientz); //'...' ili 'spread operator' je ES6 (Ecma Script standard 6 generacije) feature koji array elemenata pretvara u listu elemenata
                                           //https://livecodestream.dev/post/how-to-use-the-spread-operator-in-javascript/
 
+    this.ingredientsChanged.next(this.ingredients.slice());
+  }
+
+  deleteIngredient(index: number){
+    this.ingredients.splice(index, 1);
     this.ingredientsChanged.next(this.ingredients.slice());
   }
 }
