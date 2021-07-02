@@ -24,6 +24,7 @@ export class ShoppingEditComponent implements OnInit {
     const value = form.value;
     const newIngredient = new Ingredient(value.name, value.amount);
     this.slService.addIngredient(newIngredient);
+    console.log(form.value.amount);
   }
 
 }
