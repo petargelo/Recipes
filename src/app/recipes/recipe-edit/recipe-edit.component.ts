@@ -21,9 +21,13 @@ export class RecipeEditComponent implements OnInit {
     this.id=+params['id'];
     this.editMode = params['id'] != null; //if there is an id in params we are in edit mode
     console.log(this.editMode);
-    this.initForm(); //calling initForm everytime something(routeparams) changes 
+    this.initForm(); //calling initForm everytime something(routeparams) changes so values (name, imgPath, desc, ...) can be changed also
     }
     );
+  }
+
+  onSubmit(){
+    console.log(this.recipeForm);
   }
 
   private initForm(){
