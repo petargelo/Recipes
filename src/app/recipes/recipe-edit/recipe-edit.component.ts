@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
+import { Recipe } from 'src/app/recipes/recipe.model';
 import { RecipeService } from '../recipe.service';
 
 @Component({
@@ -27,7 +28,18 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onSubmit(){
-    console.log(this.recipeForm);
+   /*  const newRecipe= new Recipe(
+    this.recipeForm.value['name'],
+    this.recipeForm.value['description'],
+    this.recipeForm.value['imagePath'],
+    this.recipeForm.value['ingredients']);  No need to save in const because recipeForm.value 
+                                            already holds all values that are set here*/
+    if (this.editMode){
+      this.recipeService.updateRecipe(this.id, this.recipeForm.value/* newRecipe */);
+    }
+    else{
+      this.recipeService.addRecipe(this.recipeForm.value/* newRecipe */);
+    }
   }
 
   onAddIngredient(){
