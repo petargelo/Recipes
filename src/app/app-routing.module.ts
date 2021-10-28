@@ -1,4 +1,4 @@
-//1st step add NgModule to transform to transform from regular TS class to Angular module and import RouterModule to it.. Set appRoutes to be used in forRoot
+//1st step add NgModule to transform from regular TS class to Angular module and import RouterModule to it.. Set appRoutes to be used in forRoot
 //register routes with const appRoutes=... =>it's actually list of JS objects
 //create route that loads recipe section & shopping list section
 //export RouterModule to make Router and routes accesible to appModule
