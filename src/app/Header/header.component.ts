@@ -15,6 +15,6 @@ export class HeaderComponent {
   }
 
   onFetchData(){
-    this.dataStorageService.fetchRecipes();
+    this.dataStorageService.fetchRecipes().subscribe();  //subscribing here but not caring about answer. Because I'm returning fetchRecipes not subscribing 
   }
 }

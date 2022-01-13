@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Recipe } from "../recipes/recipe.model";
 import { RecipeService } from "../recipes/recipe.service";
-import { map } from 'rxjs/operators'
+import { map, tap } from 'rxjs/operators'
 
 
 @Injectable({providedIn:'root'}) //@Injectable needed because we inject service (http) into service (data-storage)
@@ -21,19 +21,23 @@ export class DataStorageService{
         }
 
         fetchRecipes(){
-            this.http.get<Recipe[]>(
+            return this.http.get<Recipe[]>( //return because I'm not subscribing here at the end anymore, but in header component
                 'https://recipebookngapp-default-rtdb.europe-west1.firebasedatabase.app/recipes.json')
-                .pipe(map(recipes=>{
-                    return recipes.map(recipe=>{
-                        return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients: []}; //copy all recipes but change ingredients. If ingredients true (has 0 or more elements) write them, else write empty array. 
+                .pipe(
+                    map(recipes=>{
+                        return recipes.map(recipe=>{
+                         return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients: []}; //copy all recipes but change ingredients. If ingredients true (has 0 or more elements) write them, else write empty array. 
                     }) 
-                })).subscribe(recipes=>{
-                    this.recipeService.setRecipes(recipes); 
-        })
+                }),
+                tap(recipes=> {
+                    this.recipeService.setRecipes(recipes);
+                }))
+                /* .subscribe(recipes=>{
+                    this.recipeService.setRecipes(recipes);  */
+        }
                                     //TypeScript doesn't understand recipes is really array. It sees it as body of http response.
                                                             //I inform TS about type with adding type format -> <Recipe[]>
   
 
     
-}
 }
