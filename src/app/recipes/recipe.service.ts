@@ -8,8 +8,9 @@ import { Subject } from 'rxjs';
 @Injectable()
 export class RecipeService {
   recipesChanged = new Subject<Recipe[]>(); 
+  private recipes: Recipe[] = [];
 
-  private recipes: Recipe[] = [
+  /* private recipes: Recipe[] = [
     new Recipe(
       'Bečki odrezak',
       '"Wiener Schnitzel“, poznat je i omiljen u cijelom svijetu!',
@@ -25,7 +26,7 @@ export class RecipeService {
         new Ingredient('Pecivo', 2),
         new Ingredient('Teleći odrezak', 1)
       ])
-  ];
+  ]; */
 
   constructor(private slService: ShoppingListService) {}
 
