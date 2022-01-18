@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-xs-12 col-md-6 col-md-offset-3">
+    <div class="col-xs-12 col-md-6 col-md-offset-3" >
         <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">    <!-- creating local reference for being able to connect to form object -->
             <div class="form-group">
                 <label for="email">E-mail</label>
@@ -16,7 +16,10 @@
             [disabled]="!authForm.valid"
             > {{isLoginMode ? 'Login' : 'Sign Up'}}</button> <!-- ternary expression. ? if is true, : if is false -->
             | 
-            <button class="btn btn-primary" type="button" (click)="onSwitchMode()">{{isLoginMode ? 'Create Account' : 'Login'}}</button>
+            <button class="btn btn-primary" type="button" (click)="onSwitchMode()">{{isLoginMode ? 'Create Account' : 'Switch to Login'}}</button>
+            <hr>
+            <div *ngIf="signupError!==''"> {{signupError}}
+            </div>
         </form>
 
     </div>
