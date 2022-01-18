@@ -14,7 +14,8 @@ export class AuthComponent implements OnInit {
   ngOnInit() {  }
 
   isLoginMode = true;
-  signupError= '';
+  isLoading = false;
+  signupError: string =null;
 
   onSwitchMode(){
     this.isLoginMode = !this.isLoginMode;
@@ -28,6 +29,8 @@ export class AuthComponent implements OnInit {
       return;
     }
 
+    this.isLoading=true;
+
     if(this.isLoginMode){
       console.log("U Login modu ste");}
 
@@ -35,13 +38,14 @@ export class AuthComponent implements OnInit {
       this.authService.signup(email, password).subscribe(resData=> 
         {
         console.log(resData);
-        },
-        error=>
+        this.isLoading=false;
+        }, errorMessage=>
         {
-          this.signupError=error.error.error.message;
-          /* this.signupError=error.error.error.message; */
+          console.log(errorMessage);
+          this.signupError=errorMessage;
+          this.isLoading=false;
         }
-      );
+        )
     }
 
     form.reset();
