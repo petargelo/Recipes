@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AuthResponseData } from './auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -15,7 +17,7 @@ export class AuthComponent implements OnInit {
 
   isLoginMode = true;
   isLoading = false;
-  signupError: string =null;
+  error: string = null;
 
   onSwitchMode(){
     this.isLoginMode = !this.isLoginMode;
@@ -24,6 +26,7 @@ export class AuthComponent implements OnInit {
   onSubmit(form: NgForm)  {
     const email=form.value.email;
     const password=form.value.password;
+    let authObs: Observable<AuthResponseData>;
 
     if (!form.valid) {
       return;
@@ -31,23 +34,24 @@ export class AuthComponent implements OnInit {
 
     this.isLoading=true;
 
-    if(this.isLoginMode){
-      console.log("U Login modu ste");}
-
-      else{
-      this.authService.signup(email, password).subscribe(resData=> 
-        {
-        console.log(resData);
-        this.isLoading=false;
-        }, errorMessage=>
-        {
-          console.log(errorMessage);
-          this.signupError=errorMessage;
-          this.isLoading=false;
-        }
-        )
+    if(this.isLoginMode=true){
+      authObs= this.authService.login(email,password);
+    }
+    else{
+      authObs= this.authService.signup(email,password);
     }
 
+    authObs.subscribe(
+      resData=>{
+        console.log(resData);
+        this.isLoading=false;
+      },errorMessage=>{
+        console.log(errorMessage);
+        this.error=errorMessage;
+        this.isLoading=false;
+      }
+    )
+      
     form.reset();
     }
     
