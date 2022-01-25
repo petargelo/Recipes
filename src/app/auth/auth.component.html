@@ -3,8 +3,8 @@
         <div *ngIf="isLoading" style="text-align: center;">
             <app-loading-spinner></app-loading-spinner>
         </div>
-        <div class="alert alert-danger" *ngIf="signupError!==null">
-            {{signupError}}
+        <div class="alert alert-danger" *ngIf="error!==null">
+            {{error}}
         </div>
         <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)" *ngIf="!isLoading">    <!-- creating local reference for being able to connect to form object -->
             <div class="form-group">
