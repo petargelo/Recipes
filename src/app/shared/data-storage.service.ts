@@ -1,13 +1,14 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { getPlatform, Injectable } from "@angular/core";
 import { Recipe } from "../recipes/recipe.model";
 import { RecipeService } from "../recipes/recipe.service";
-import { map, tap } from 'rxjs/operators'
+import { map, tap, take, exhaustMap } from 'rxjs/operators'
+import { AuthService } from "../auth/auth.service";
 
 
-@Injectable({providedIn:'root'}) //@Injectable needed because we inject service (http) into service (data-storage)
+@Injectable({providedIn:'root'}) 
 export class DataStorageService{
-    constructor(private http: HttpClient, private recipeService: RecipeService){}
+    constructor(private http: HttpClient, private recipeService: RecipeService, private authService: AuthService){}
 
         storeRecipes(){
             const recipes= this.recipeService.getRecipes(); //using recipeService method to store
@@ -20,7 +21,7 @@ export class DataStorageService{
 
         }
 
-        fetchRecipes(){
+        /* fetchRecipes(){
             return this.http.get<Recipe[]>( //return because I'm not subscribing here at the end anymore, but in header component
                 'https://recipebookngapp-default-rtdb.europe-west1.firebasedatabase.app/recipes.json')
                 .pipe(
@@ -33,11 +34,29 @@ export class DataStorageService{
                     this.recipeService.setRecipes(recipes);
                 }))
                 /* .subscribe(recipes=>{
-                    this.recipeService.setRecipes(recipes);  */
-        }
+                    this.recipeService.setRecipes(recipes);  }*/
+        
                                     //TypeScript doesn't understand recipes is really array. It sees it as body of http response.
-                                                            //I inform TS about type with adding type format -> <Recipe[]>
+                                                            //I inform TS about type with adding type format -> <Recipe[]> */
   
-
+        fetchRecipes(){
+            return this.authService.user.pipe(
+                take(1), 
+                exhaustMap(user =>{
+                return this.http.get<Recipe[]>( 'https://recipebookngapp-default-rtdb.europe-west1.firebasedatabase.app/recipes.json?auth='+user.token);
+                }),
+                    map(recipes=>{
+                        return recipes.map(recipe=>{
+                            return { ...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []};
+                    });
+                }),
+                tap (recipes=>{
+                    this.recipeService.setRecipes(recipes);
+                })
+            );
+            
+            
+    
+}
     
 }
