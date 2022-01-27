@@ -1,7 +1,8 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { throwError } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { Subject, throwError } from "rxjs";
+import { catchError, tap } from "rxjs/operators";
+import { User } from "./user.model";
 
 export interface AuthResponseData {
     idToken: string;	    /* A Firebase Auth ID token for the newly created user. */
@@ -19,13 +20,18 @@ export class AuthService{
 
 constructor (private authService: HttpClient){  }
 
+user = new Subject<User>();
+
 signup(email: string, password: string){
     return this.authService.post<AuthResponseData> ( 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDcV0QVbhFeYSbcK57wy3z6ov-e4hkiOUw',
     {   email: email,
         password: password,
         returnSecureToken: true } 
        )
-       .pipe(catchError(this.handleError));          
+       .pipe(catchError(this.handleError), 
+       tap(resData=>{
+           this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn) // + added for converting from Date object format to number; tap operator allows to perform some action without changing the response
+       }));          
     // this is a Firebase POST API, key is taken from Project Setting in Firebase Console
 
 }
@@ -36,9 +42,18 @@ login(email:string, password:string){
     password: password,
     returnSecureToken: true}
    )
-   .pipe(catchError(this.handleError));
+   .pipe(catchError(this.handleError),
+   tap(resData=>{
+       this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn) // + added for converting from Date object format to number
+   }));
 }
 
+    private handleAuthentication(email:string, userId: string, token: string, expiresIn: number){
+        const expirationDate = new Date(new Date().getTime() + expiresIn*1000); //there are 2 newDate function to force variable to be of date type. The second one gets converted to number, the first forces it to get back Date type
+        const userz= new User(email, userId, token, expirationDate);
+        
+        this.user.next(userz);
+    }
 
     private handleError(errorRes: HttpErrorResponse){
         let errorMessage = 'An unknown error occured!'
