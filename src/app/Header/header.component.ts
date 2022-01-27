@@ -25,6 +25,10 @@ export class HeaderComponent implements OnInit, OnDestroy{
     this.dataStorageService.storeRecipes();
   }
 
+  onLogout(){
+    
+  }
+
   onFetchData(){
     this.dataStorageService.fetchRecipes().subscribe();  //subscribing here but not caring about answer. Because I'm returning fetchRecipes not subscribing 
   }
