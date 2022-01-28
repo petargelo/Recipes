@@ -12,8 +12,8 @@ export class DataStorageService{
 
         storeRecipes(){
             const recipes= this.recipeService.getRecipes(); //using recipeService method to store
-            this.http.put( // .put overwrites existing data with new data
-                'https://recipebookngapp-default-rtdb.europe-west1.firebasedatabase.app/recipes.json',
+            this.http.put( // .put overwrites existing data with new data 
+                'https://recipebookngapp-default-rtdb.europe-west1.firebasedatabase.app/recipes.json', // auth interceptor is added to this http request 
                 recipes).subscribe(response=>{
                     console.log(response);
                 }); //another way is to add return in front of put request and subscribe in header component. 
@@ -40,11 +40,9 @@ export class DataStorageService{
                                                             //I inform TS about type with adding type format -> <Recipe[]> */
   
         fetchRecipes(){
-            return this.authService.user.pipe(
-                take(1), 
-                exhaustMap(user =>{
-                return this.http.get<Recipe[]>( 'https://recipebookngapp-default-rtdb.europe-west1.firebasedatabase.app/recipes.json?auth='+user.token);
-                }),
+                return this.http.get<Recipe[]>( 'https://recipebookngapp-default-rtdb.europe-west1.firebasedatabase.app/recipes.json?', // auth interceptor is added to this http request 
+                )
+                .pipe(
                     map(recipes=>{
                         return recipes.map(recipe=>{
                             return { ...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []};
