@@ -49,6 +49,10 @@ login(email:string, password:string){
    }));
 }
 
+logout(){
+    this.user.next(null); // user is set to default and not authenticated anymore
+}
+
     private handleAuthentication(email:string, userId: string, token: string, expiresIn: number){
         const expirationDate = new Date(new Date().getTime() + expiresIn*1000); //there are 2 newDate function to force variable to be of date type. The second one gets converted to number, the first forces it to get back Date type
         const userz= new User(email, userId, token, expirationDate);
