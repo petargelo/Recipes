@@ -20,44 +20,59 @@ export class AuthService{
 
 constructor (private authService: HttpClient){  }
 
-user = new BehaviorSubject<User>(null);
-token: string = null;
+    user = new BehaviorSubject<User>(null);
+    token: string = null;
 
-signup(email: string, password: string){
-    return this.authService.post<AuthResponseData> ( 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDcV0QVbhFeYSbcK57wy3z6ov-e4hkiOUw',
-    {   email: email,
+    signup(email: string, password: string){
+        return this.authService.post<AuthResponseData> ( 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDcV0QVbhFeYSbcK57wy3z6ov-e4hkiOUw',
+        {   email: email,
+            password: password,
+            returnSecureToken: true } 
+        )
+        .pipe(catchError(this.handleError), 
+        tap(resData=>{
+            this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn) // + added for converting from Date object format to number; tap operator allows to perform some action without changing the response
+        }));          
+        // this is a Firebase POST API, key is taken from Project Setting in Firebase Console
+
+    }
+
+    login(email:string, password:string){
+    return this.authService.post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDcV0QVbhFeYSbcK57wy3z6ov-e4hkiOUw',
+    {email:email,
         password: password,
-        returnSecureToken: true } 
-       )
-       .pipe(catchError(this.handleError), 
-       tap(resData=>{
-           this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn) // + added for converting from Date object format to number; tap operator allows to perform some action without changing the response
-       }));          
-    // this is a Firebase POST API, key is taken from Project Setting in Firebase Console
+        returnSecureToken: true}
+    )
+    .pipe(catchError(this.handleError),
+    tap(resData=>{
+        this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn) // + added for converting from Date object format to number
+    }));
+    }
 
-}
+    logout(){
+        this.user.next(null); // user is set to default and not authenticated anymore
+        localStorage.removeItem('userData');
+    }
 
-login(email:string, password:string){
-  return this.authService.post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDcV0QVbhFeYSbcK57wy3z6ov-e4hkiOUw',
-   {email:email,
-    password: password,
-    returnSecureToken: true}
-   )
-   .pipe(catchError(this.handleError),
-   tap(resData=>{
-       this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn) // + added for converting from Date object format to number
-   }));
-}
-
-logout(){
-    this.user.next(null); // user is set to default and not authenticated anymore
-}
-
-    private handleAuthentication(email:string, userId: string, token: string, expiresIn: number){
+    private handleAuthentication(email:string, userId: string, token: string, expiresIn: number){ //user is created here
         const expirationDate = new Date(new Date().getTime() + expiresIn*1000); //there are 2 newDate function to force variable to be of date type. The second one gets converted to number, the first forces it to get back Date type
         const userz= new User(email, userId, token, expirationDate);
         
         this.user.next(userz);
+        localStorage.setItem('userData', JSON.stringify(userz)); //JS object must be converted to string to write to localStorage
+    }
+
+    autoRelogin(){
+       const userData: {email: string, id: string; _token: string, _tokenExpirationDate: Date}= JSON.parse(localStorage.getItem('userData')); //convert from JSON.string to JS object
+       if (!userData) {
+           return; 
+       }
+       
+       const loadedUser= new User(userData.email, userData.id, userData._token, userData._tokenExpirationDate);
+
+       if(loadedUser.token){ //if getter from user.model is true, i.e. not null
+        this.user.next(loadedUser);
+       } 
     }
 
     private handleError(errorRes: HttpErrorResponse){
