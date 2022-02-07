@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import { BehaviorSubject, Subject, throwError } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { User } from "./user.model";
@@ -18,10 +19,11 @@ export interface AuthResponseData {
 
 export class AuthService{
 
-constructor (private authService: HttpClient){  }
+constructor (private authService: HttpClient, private router: Router){  }
 
     user = new BehaviorSubject<User>(null);
     token: string = null;
+    private tokenExpirationTimer: any;
 
     signup(email: string, password: string){
         return this.authService.post<AuthResponseData> ( 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDcV0QVbhFeYSbcK57wy3z6ov-e4hkiOUw',
@@ -51,7 +53,12 @@ constructor (private authService: HttpClient){  }
 
     logout(){
         this.user.next(null); // user is set to default and not authenticated anymore
+        this.router.navigate(['/auth']);
         localStorage.removeItem('userData');
+        if(this.tokenExpirationTimer){
+            clearTimeout(this.tokenExpirationTimer);
+        }
+        this.tokenExpirationTimer = null;
     }
 
     private handleAuthentication(email:string, userId: string, token: string, expiresIn: number){ //user is created here
@@ -59,7 +66,14 @@ constructor (private authService: HttpClient){  }
         const userz= new User(email, userId, token, expirationDate);
         
         this.user.next(userz);
+        this.autoLogout(expiresIn*1000);
         localStorage.setItem('userData', JSON.stringify(userz)); //JS object must be converted to string to write to localStorage
+    }
+
+    autoLogout(expirationDuration: number){
+        this.tokenExpirationTimer = setTimeout(()=>{
+            this.logout();
+        }, expirationDuration);
     }
 
     autoRelogin(){
@@ -72,6 +86,8 @@ constructor (private authService: HttpClient){  }
 
        if(loadedUser.token){ //if getter from user.model is true, i.e. not null
         this.user.next(loadedUser);
+        const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+        this.autoLogout(expirationDuration);
        } 
     }
 
