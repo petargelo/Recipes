@@ -14,7 +14,7 @@ declarations:[
 imports: [
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path:'auth', component: AuthComponent }])
+    RouterModule.forChild([{ path:'', component: AuthComponent }]) //path is now set in app-routing for lazy loading
 ]
 })
 

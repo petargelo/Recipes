@@ -13,7 +13,9 @@ const appRoutes: Routes = [
     { path: '', redirectTo: '/recipes', pathMatch:'full'}, //it's possible to just add recipes as 'component:' instead of redirectTo
     /* { path: 'shopping-list', component: ShoppingListComponent }, */
     /* { path:'auth', component: AuthComponent } */
-    { path:'recipes', loadChildren: ()=> import('./recipes/recipes.module').then(m => m.RecipesModule) } //this path is lazy loaded. Import resolves a promise so I'm calling 'then()'. m contains module object './recipes/recipes.module'
+    { path:'recipes', loadChildren: ()=> import('./recipes/recipes.module').then(m => m.RecipesModule) }, //this path is lazy loaded. Import resolves a promise so I'm calling 'then()'. m contains module object './recipes/recipes.module'
+    { path:'shopping-list', loadChildren: ()=> import('./shopping-list/shopping-list.module').then(m=>m.ShoppingListModule)},
+    { path: 'auth', loadChildren: ()=> import('./auth/auth.module').then(m=>m.AuthModule)}
 ];
 
 @NgModule({

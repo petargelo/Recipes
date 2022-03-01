@@ -14,7 +14,7 @@ import { ShoppingListComponent } from "./shopping-list.component";
     imports:[
         FormsModule, // enables template driven forms which are used in shopping list area
         CommonModule,
-        RouterModule.forChild([{path:'shopping-list', component: ShoppingListComponent }])
+        RouterModule.forChild([{path:'', component: ShoppingListComponent }]) //path is now set in app-routing for lazy loading
     ]
 })
 
