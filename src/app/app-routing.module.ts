@@ -6,7 +6,7 @@
 //in app.comonent.html replace *ngIf's with <router-outlet>
 
 import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 
 
 const appRoutes: Routes = [
@@ -19,7 +19,7 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(appRoutes)],
+    imports: [RouterModule.forRoot(appRoutes, {preloadingStrategy: PreloadAllModules})], // preloads recipes and shopping list before user clicks on them. Precisely, when auth is finished loading. Clicking on one of specified modules after authentication opens selected module instantly. 
     exports: [RouterModule]
 }) 
 
