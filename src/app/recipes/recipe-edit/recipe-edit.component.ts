@@ -12,6 +12,10 @@ export class RecipeEditComponent implements OnInit {
   id: number;
   editMode=undefined;
   recipeForm: FormGroup;
+  get ingredientsControls(){
+    return (this.recipeForm.get('ingredients') as FormArray).controls
+  } //A getter property is like a function which you can use like a property in a template. You can't set a value to it, though, you can only read it. 
+    //this expression here will resolve to a formArray, and therefore, it does not complain about using controls here as it had in template
 
   constructor(private route: ActivatedRoute,
     private recipeService: RecipeService,
