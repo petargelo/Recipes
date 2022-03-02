@@ -5,6 +5,7 @@ import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { DropdownDirective } from "../shared/dropdown.directive";
+import { SharedModule } from "../shared/shared.module";
 import { RecipeDetailComponent } from "./recipe-detail/recipe-detail.component";
 import { RecipeEditComponent } from "./recipe-edit/recipe-edit.component";
 import { RecipeItemComponent } from "./recipe-list/recipe-item/recipe-item.component";
@@ -21,15 +22,16 @@ import { RecipesComponent } from "./recipes.component";
         RecipeItemComponent,
         RecipeStartComponent,
         RecipeEditComponent,
-        DropdownDirective
+        
         
     ],
 
     imports:[
         RouterModule,
         RecipesRoutingModule, //added so recipe routes can be browsed.
-        CommonModule,   //added so ngIf, ngFor can be used. Added instead of browser module which does this work in app module.
+       /*  CommonModule,   */ //added so ngIf, ngFor can be used. Added instead of browser module which does this work in app module.
         ReactiveFormsModule,
+        SharedModule
     ],
 
     providers:[]
